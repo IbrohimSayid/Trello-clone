@@ -1,5 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { CiGrid41 } from "react-icons/ci";
+import { FaChartPie } from "react-icons/fa";
+import { GoBook } from "react-icons/go";
+import { IoSettingsOutline } from "react-icons/io5";
+import { CiLocationArrow1 } from "react-icons/ci";
+import { FaRegFolder } from "react-icons/fa6";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -14,32 +19,28 @@ const Sidebar = () => {
             onClick={() => {
               navigate("/");
             }}
-            className="w-5 text-co cursor-pointer hover:bg-sky-700 p-3 box-contenterounded transition-colors duration-300 ease-in-out"
-            src="./img/GridMenu.svg"
-            alt=""
+            className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out"
           />
         </li>
         <li>
-          <img className="w-5" src="./img/Icon2.svg" alt="" />
+          <FaChartPie className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
         </li>
         <li>
-          <img className="w-5" src="./img/book.svg" alt="" />
+          <GoBook className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
         </li>
         <li>
-          <img
+          <IoSettingsOutline
             onClick={() => {
               navigate("/seting");
             }}
-            className="w-5 cursor-pointer hover:bg-gray-200"
-            src="./img/Seting.svg"
-            alt=""
+            className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out"
           />
         </li>
         <li>
-          <img className="w-5" src="./img/Message.svg" alt="" />
+          <CiLocationArrow1 className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
         </li>
         <li>
-          <img className="w-5" src="./img/File.svg" alt="" />
+          <FaRegFolder className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
         </li>
       </ul>
     </aside>
