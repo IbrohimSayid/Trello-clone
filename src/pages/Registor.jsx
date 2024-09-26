@@ -50,14 +50,14 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-semibold text-center">Register</h2>
-        <p className="text-gray-500 text-center mb-4">Getting started is easy</p>
+    <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full"> {/* O'zgartirildi */}
+      <div className="bg-white p-10 rounded-lg shadow-lg w-96"> {/* O'zgartirildi */}
+        <h2 className="text-3xl font-bold text-center">Register</h2> {/* O'zgartirildi */}
+        <p className="text-gray-600 text-center mb-4">Getting started is easy</p> {/* O'zgartirildi */}
 
         {/* Social media buttons */}
         <div className="flex justify-center mb-4">
-          <button className="bg-white border border-gray-300 rounded-lg px-4 py-2 flex items-center mr-2">
+          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center mr-2 hover:bg-gray-100"> {/* O'zgartirildi */}
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/0/9b/Google_Icons_Logo.png"
               alt="Google"
@@ -65,7 +65,7 @@ const Register = () => {
             />
             Google
           </button>
-          <button className="bg-white border border-gray-300 rounded-lg px-4 py-2 flex items-center">
+          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center hover:bg-gray-100"> {/* O'zgartirildi */}
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
               alt="Facebook"
@@ -79,8 +79,8 @@ const Register = () => {
         <p className="text-center mb-4">Or continue with</p>
 
         {/* Error and success messages */}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {success && <p className="text-green-500 text-center mb-4">{success}</p>}
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>} {/* O'zgartirildi */}
+        {success && <p className="text-green-600 text-center mb-4">{success}</p>} {/* O'zgartirildi */}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -88,7 +88,7 @@ const Register = () => {
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="border border-gray-300 rounded-lg w-full p-2 mb-4"
+            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
             required
           />
           <input
@@ -96,7 +96,7 @@ const Register = () => {
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="border border-gray-300 rounded-lg w-full p-2 mb-4"
+            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
             required
           />
           <input
@@ -104,7 +104,7 @@ const Register = () => {
             placeholder="Enter Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-lg w-full p-2 mb-4"
+            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
             required
           />
           <input
@@ -112,7 +112,7 @@ const Register = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border border-gray-300 rounded-lg w-full p-2 mb-4"
+            className="border border-gray-400 rounded-lg w-full p-3 mb-4" 
             required
           />
           <input
@@ -120,12 +120,12 @@ const Register = () => {
             placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="border border-gray-300 rounded-lg w-full p-2 mb-6"
+            className="border border-gray-400 rounded-lg w-full p-3 mb-6"
             required
           />
           <button
             type="submit"
-            className="bg-green-500 text-white rounded-lg w-full p-2 hover:bg-green-600"
+            className="bg-green-600 text-white rounded-lg w-full p-3 hover:bg-green-700"
           >
             Create Account
           </button>
