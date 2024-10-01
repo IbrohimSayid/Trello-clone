@@ -1,173 +1,92 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
 
-const Seting = () => {
-
-
-  const [selectedFile, setSelectedFile] = useState(null); // Состояние для хранения выбранного файла
+const Setting = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Функция для открытия окна выбора файла
   const openFileDialog = () => {
     fileInputRef.current.click();
   };
 
-  // Обработка выбранного файла
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedFile(file); // Обновляем состояние выбранного файла
-      console.log(`Выбран файл: ${file.name}`);
+      setSelectedFile(file);
+      console.log(`Selected file: ${file.name}`);
     }
   };
 
-
-
   return (
-    <div className="p-6 flex-1 bg-gray-50">
-      <div className="relative h-[17.625rem] bg-[url('./img/bg-seting.png')] from-blue-500 to-purple-600 rounded-lg mb-6">
-        <img
-          className="absolute -bottom-20 left-4 w-[8.563rem] h-[8.563rem] rounded-full border-4 border-white"
-          src="./img/ProfileFoto.svg"
-          alt="User Avatar"
+    <div className="p-4 flex-1 bg-gray-100">
+      <h2 className="text-2xl font-bold mb-4 text-center">Account Settings</h2> {/* Sarlavha hajmini kichraytirish */}
+
+      <div className="bg-white shadow-md rounded-lg p-4 mb-4"> {/* Hajmini kichraytirish */}
+        <h3 className="text-lg font-semibold mb-3">Profile Information</h3> {/* Sarlavha hajmini kichraytirish */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3"> {/* Hajmini kichraytirish */}
+          <div>
+            <label className="block text-sm font-medium mb-1">First Name</label>
+            <input
+              type="text"
+              className="input input-bordered w-full text-sm" // Kichikroq font
+              placeholder="Enter your first name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Last Name</label>
+            <input
+              type="text"
+              className="input input-bordered w-full text-sm" // Kichikroq font
+              placeholder="Enter your last name"
+            />
+          </div>
+        </div>
+        <label className="block text-sm font-medium mb-1">Email</label>
+        <input
+          type="email"
+          className="input input-bordered w-full mb-3 text-sm" // Kichikroq font
+          placeholder="youremail@example.com"
         />
-      </div>
-
-      <div className="flex  justify-between">
-        <h2 className="text-3xl font-semibold mb-4 ml-56">Settings</h2>
-        <div className="flex justify-end space-x-4">
-          <button type="button" className="btn bg-zinc-300">
-            Cancel
-          </button>
-          <button type="button" className="btn text-white btn-primary">
-            Save
-          </button>
-        </div>
-      </div>
-      <ul className="flex space-x-6 mb-6 mt-10">
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
+        <div
+          onClick={openFileDialog}
+          className="border-2 border-dashed border-gray-400 rounded-lg p-3 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-gray-50 transition"
         >
-          My details
-        </Link>
-        <Link
-          to="/seting"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Profile
-        </Link>
-        <Link
-          to="/seting"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Password
-        </Link>
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Team
-        </Link>
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Plan
-        </Link>
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Billing
-        </Link>
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Email
-        </Link>
-        <Link
-          to="/"
-          className="font-semibold hover:text-[#232360] text-[#6A7181]"
-        >
-          Natification
-        </Link>
-      </ul>
-
-      <form className="p-6 rounded-lg  space-y-4">
-        <div className="flex  gap-7">
-          <div>
-            <label className="block text-sm font-medium mb-3">First name</label>
-            <input
-              type="text"
-              className="input input-bordered w-[19.25rem] h-[2.813rem]"
-              placeholder="Killan"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-3">Last name</label>
-            <input
-              type="text"
-              className="input input-bordered w-[19.25rem] h-[2.813rem]"
-              placeholder="James"
-            />
-          </div>
-        </div>
-
-        <label className="mt-5" htmlFor="email">
-          Email
-        </label>
-        <div className="input input-bordered w-[30rem] flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="h-4 w-4 opacity-70"
-          >
-            <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-            <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-          </svg>
+          <p className="text-gray-600 text-sm">Click to upload or drag and drop</p>
+          <p className="text-gray-500 text-xs">SVG, PNG, JPG or GIF (max 800x400px)</p>
           <input
-            type="text"
-            className="grow"
-            placeholder="killanjames@gmail.com"
-          />
-        </div>
-
-        <div onClick={openFileDialog} className="w-[34.75rem] max-w-md  border-2 border-gray-300 rounded-lg flex flex-col items-center justify-center text-center">
-          <div className="text-gray-400 mb-4">
-            <img className="mt-5" src="./img/InputFileLogo.svg" alt="" />
-          </div>
-          <p className="text-gray-500">Click to upload or drag and drop</p>
-          <p className="text-gray-400 mb-5 text-sm">
-            SVG, PNG, JPG or GIF (max, 800x400px)
-          </p>
-          <input
-          ref={fileInputRef}
-          
-          onChange={handleFileChange}
+            ref={fileInputRef}
+            onChange={handleFileChange}
             type="file"
-            className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-            style={{ position: "absolute", zIndex: "-1" }}
+            className="hidden"
           />
           {selectedFile && (
-        <p className="text-green-500 mt-2">Выбран файл: {selectedFile.name}</p>
-      )}
+            <p className="text-green-600 mt-1 text-sm">
+              Selected file: {selectedFile.name}
+            </p>
+          )}
         </div>
+      </div>
 
-        <div className="mt-6">
-          <label className="block text-sm font-medium mb-3">Role</label>
+      <div className="bg-white shadow-md rounded-lg p-4"> {/* Hajmini kichraytirish */}
+        <h3 className="text-lg font-semibold mb-3">Account Settings</h3> {/* Sarlavha hajmini kichraytirish */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium mb-1">Role</label>
           <input
             type="text"
-            className="input input-bordered w-[19.25rem] h-[2.813rem]"
-            placeholder="Product Designer"
+            className="input input-bordered w-full text-sm" // Kichikroq font
+            placeholder="Enter your role"
           />
-          
         </div>
-      </form>
+        <div className="flex justify-end space-x-2">
+          <button type="button" className="btn bg-gray-300 text-gray-700 text-sm"> {/* Kichikroq font */}
+            Cancel
+          </button>
+          <button type="button" className="btn btn-primary text-white text-sm"> {/* Kichikroq font */}
+            Save Changes
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Seting;
+export default Setting;

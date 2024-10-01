@@ -1,88 +1,71 @@
-import  { useState } from 'react';
+import { useState } from "react";
+import axiosInstance from "../Axios/axiosConfig";
+import { useNavigate } from "react-router-dom";
+import { IoEyeOff, IoEye } from "react-icons/io5";
 
 const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-   
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
     try {
-      const response = await fetch('http://trello.vimlc.uz:8000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          password: password,
-          confirmPassword: confirmPassword
-        }),
+      const response = await axiosInstance.post("/auth/register", {
+        email,
+        firstName,
+        lastName,
+        password,
+        confirmPassword,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess('Account created successfully');
-        setError('');
-        
-      } else {
-        setError(data.message || 'Registration failed');
-        setSuccess('');
+      if (response.status === 201) {
+        const token = response.data.token; // Tokenni olish
+        localStorage.setItem("token", token); // Tokenni localStorage ga saqlash
+        localStorage.setItem("tokenExpiry", Date.now() + 60 * 60 * 1000); // 60 daqiqa uchun vaqt belgilash
+        setSuccess("Account created successfully");
+        setError("");
+        navigate("/login");
       }
     } catch (err) {
-      setError('An error occurred during registration');
-      setSuccess('');
+      setError(err.response?.data?.message || "Registration failed");
+      setSuccess("");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full"> {/* O'zgartirildi */}
-      <div className="bg-white p-10 rounded-lg shadow-lg w-96"> {/* O'zgartirildi */}
-        <h2 className="text-3xl font-bold text-center">Register</h2> {/* O'zgartirildi */}
-        <p className="text-gray-600 text-center mb-4">Getting started is easy</p> {/* O'zgartirildi */}
-
-        {/* Social media buttons */}
-        <div className="flex justify-center mb-4">
-          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center mr-2 hover:bg-gray-100"> {/* O'zgartirildi */}
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/0/9b/Google_Icons_Logo.png"
-              alt="Google"
-              className="h-5 mr-2"
-            />
-            Google
-          </button>
-          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center hover:bg-gray-100"> {/* O'zgartirildi */}
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
-              alt="Facebook"
-              className="h-5 mr-2"
-            />
-            Facebook
-          </button>
-        </div>
-
-        <hr className="my-4" />
-        <p className="text-center mb-4">Or continue with</p>
-
-        {/* Error and success messages */}
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>} {/* O'zgartirildi */}
-        {success && <p className="text-green-600 text-center mb-4">{success}</p>} {/* O'zgartirildi */}
-
+    <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full">
+      <div className="bg-white p-10 rounded-lg shadow-lg w-96">
+        <h2 className="text-3xl font-bold text-center">Register</h2>
+        <p className="text-gray-600 text-center mb-4">
+          Getting started is easy
+        </p>
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+        {success && (
+          <p className="text-green-600 text-center mb-4">{success}</p>
+        )}
         <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
+            required
+          />
           <input
             type="text"
             placeholder="First Name"
@@ -99,36 +82,73 @@ const Register = () => {
             className="border border-gray-400 rounded-lg w-full p-3 mb-4"
             required
           />
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4" 
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-6"
-            required
-          />
+
+          <div className="relative mb-4">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border border-gray-400 rounded-lg w-full p-3"
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-3 text-gray-600"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <IoEye className="text-2xl" />
+              ) : (
+                <IoEyeOff className="text-2xl" />
+              )}
+            </button>
+          </div>
+          <div className="relative mb-6">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="border border-gray-400 rounded-lg w-full p-3"
+              required
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-3 text-gray-600"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? (
+                <IoEye className="text-2xl" />
+              ) : (
+                <IoEyeOff className="text-2xl" />
+              )}
+            </button>
+          </div>
           <button
             type="submit"
-            className="bg-green-600 text-white rounded-lg w-full p-3 hover:bg-green-700"
+            className="bg-green-600 text-white rounded-lg w-full p-3 hover:bg-green-700 mb-4"
           >
             Create Account
           </button>
+          <div className="flex justify-between">
+            <button
+              type="button"
+              className="bg-blue-600 text-white rounded-lg w-1/2 p-3 hover:bg-blue-700 mr-2"
+              onClick={() => {
+                alert("Google orqali ro'yxatdan o'tish tugmasi bosildi");
+              }}
+            >
+              Sign Up with Google
+            </button>
+            <button
+              type="button"
+              className="bg-gray-600 text-white rounded-lg w-1/2 p-3 hover:bg-gray-700 ml-2"
+              onClick={() => navigate("/login")}
+            >
+              Log In
+            </button>
+          </div>
         </form>
       </div>
     </div>

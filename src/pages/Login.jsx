@@ -1,61 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from "react"; // useEffect ni import qilish
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../Axios/axiosConfig";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Ikonkalarni import qilish
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Parolni ko'rsatish holatini qo'shish
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tokenExpiry = localStorage.getItem("tokenExpiry");
+    if (tokenExpiry && Date.now() > tokenExpiry) {
+      // Agar token muddati o'tgan bo'lsa, foydalanuvchini logIn sahifasiga yo'naltirish
+      localStorage.removeItem("token");
+      localStorage.removeItem("tokenExpiry");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://trello.vimlc.uz:8000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-       
-        console.log('Login successful:', data);
-        localStorage.setItem('authToken', data.token); 
-        alert('Login successful!');
-      } else {
-        
-        setError(data.message || 'Login failed');
+      if (response.status === 200) {
+        console.log("Login successful:", response.data);
+        localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("tokenExpiry", Date.now() + 60 * 60 * 1000); // 60 daqiqa uchun vaqt belgilash
+        navigate("/");
       }
     } catch (error) {
-      setError('An error occurred during login. Please try again later.');
-      console.error('Login error:', error);
+      setError(error.message || "Login failed");
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Parolni ko'rsatish holatini o'zgartirish
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full">
       <div className="bg-white p-10 rounded-lg shadow-lg w-96">
         <h2 className="text-3xl font-bold text-center mb-2">Login Page</h2>
-        <p className="text-gray-600 text-center mb-4">Login into your account</p>
-        
-        <div className="flex justify-center mb-4">
-          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center mr-2 hover:bg-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/0/9b/Google_Icons_Logo.png" alt="Google" className="h-5 mr-2"/>
-            Google
-          </button>
-          <button className="bg-white border border-gray-400 rounded-lg px-4 py-2 flex items-center hover:bg-gray-100">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook" className="h-5 mr-2"/>
-            Facebook
-          </button>
-        </div>
-
-        <hr className="my-4" />
-        <p className="text-center mb-4">Or continue with</p>
-
+        <p className="text-gray-600 text-center mb-4">
+          Login into your account
+        </p>
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -65,27 +61,39 @@ const LoginPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
-            type="password"
-            placeholder="Password"
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-
-          <div className="flex items-center justify-between mb-6">
-            <label className="flex items-center">
-              <input type="checkbox" className="mr-2" />
-              Remember me
-            </label>
-            <a href="#" className="text-red-600 hover:underline">Recover Password</a>
+          <div className="relative mb-4">
+            <input
+              type={showPassword ? "text" : "password"} // Parolni ko'rsatish yoki yashirish
+              placeholder="Password"
+              className="border border-gray-400 rounded-lg w-full p-3 pr-10" // Ikonka uchun o'ngda joy qoldirish
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span
+              onClick={togglePasswordVisibility}
+              className="absolute right-3 top-3 cursor-pointer"
+            >
+              {showPassword ? (
+                <FaEyeSlash className="text-2xl" />
+              ) : (
+                <FaEye className="text-2xl" />
+              )}
+            </span>
           </div>
-
-          <button className="bg-blue-600 text-white rounded-lg w-full p-3 hover:bg-blue-700" type="submit">
+          <button
+            className="bg-blue-600 text-white rounded-lg w-full p-3 hover:bg-blue-700"
+            type="submit"
+          >
             Log In
           </button>
         </form>
+        <p className="text-center mt-4">
+          If you don't have an account,{" "}
+          <Link to="/registor" className="text-blue-600 hover:underline">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -1,87 +1,68 @@
-
 import { Route, Routes, useNavigate } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import Registor from "./pages/Registor";
 import Seting from "./pages/Seting";
-import Home from "./pages//Home";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import File from "./pages/File";
 import { useEffect, useState } from "react";
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem("authToken"));
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const storedToken = localStorage.getItem("authToken"); // Token nomini yangilandi
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
-  // const [token, setToken] = useState("");
-  // const navigate = useNavigate();
+  function ProtectedRoute({ isAuthenticated, children }) {
+    useEffect(() => {
+      if (!isAuthenticated) {
+        navigate("/login");
+      }
+    }, [isAuthenticated, navigate]);
 
-  // useEffect(() => {
-  //   const storedToken = localStorage.getItem("token");
-  //   if (storedToken) {
-  //     setToken(storedToken);
-  //   }
-  // }, []);
-
-  // function ProtectedRoute({ isAuthenticated, children }) {
-  //   useEffect(() => {
-  //     if (!isAuthenticated) {
-  //       navigate('/login');
-  //     }
-  //   }, [isAuthenticated, navigate]);
-
-  //   return isAuthenticated ? children : null;
-  // }
-
-
-
-
-
+    return isAuthenticated ? children : null;
+  }
 
   return (
     <div className="flex h-screen">
       <Routes>
-        <Route
-          path="/registor"
-          element={
-            
-              <Registor></Registor>
-           
-          }
-        ></Route>
-
-        <Route
-          path="/login"
-          element={
-            
-              <Login></Login>
-          
-          }
-        ></Route>
+        <Route path="/registor" element={<Registor />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/seting"
           element={
-            <MainLayout>
-              <Seting></Seting>
-            </MainLayout>
+            <ProtectedRoute isAuthenticated={!!token}>
+              <MainLayout>
+                <Seting />
+              </MainLayout>
+            </ProtectedRoute>
           }
-        ></Route>
+        />
         <Route
           path="/file"
           element={
-            <MainLayout>
-              <File></File>
-            </MainLayout>
+            <ProtectedRoute isAuthenticated={!!token}>
+              <MainLayout>
+                <File />
+              </MainLayout>
+            </ProtectedRoute>
           }
-        ></Route>
+        />
         <Route
           path="/"
           element={
-            // <ProtectedRoute isAuthenticated={!!token}>
+            <ProtectedRoute isAuthenticated={!!token}>
               <MainLayout>
-              <Home></Home>
-            </MainLayout>
-            // </ProtectedRoute>
+                <Home />
+              </MainLayout>
+            </ProtectedRoute>
           }
-        ></Route>
+        />
       </Routes>
     </div>
   );

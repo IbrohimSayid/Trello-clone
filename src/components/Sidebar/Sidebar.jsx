@@ -1,46 +1,83 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CiGrid41 } from "react-icons/ci";
 import { FaChartPie } from "react-icons/fa";
 import { GoBook } from "react-icons/go";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { FaRegFolder } from "react-icons/fa6";
+import { RiTrelloLine } from "react-icons/ri";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <aside className="w-32 bg-white h-screen p-6 border-r">
-      <img src="./img/OctomLogo.svg" alt="Logo" />
+    <aside className=" bg-gray-800 p-4 border-r border-gray-800 flex flex-col items-center ">
+      <div className="flex flex-col items-center">
+      <RiTrelloLine className="text-white text-5xl"/>
+      <h1 className="text-white font-san-serif">Trello.</h1>
+      </div>
 
-      <ul className="mt-[9.438rem] flex flex-col justify-center items-center gap-[2.813rem]">
+      <ul className="flex flex-col gap-12 my-16">
         <li>
           <CiGrid41
-            onClick={() => {
-              navigate("/");
-            }}
-            className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out"
+            onClick={() => navigate("/")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
           />
         </li>
         <li>
-          <FaChartPie className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
+          <FaChartPie
+            onClick={() => navigate("/chart")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/charts"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
+          />
         </li>
         <li>
-          <GoBook className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
+          <GoBook
+            onClick={() => navigate("/book")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/books"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
+          />
         </li>
         <li>
           <IoSettingsOutline
-            onClick={() => {
-              navigate("/seting");
-            }}
-            className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out"
+            onClick={() => navigate("/seting")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/seting"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
           />
         </li>
         <li>
-          <CiLocationArrow1 className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
+          <CiLocationArrow1
+            onClick={() => navigate("/location")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/location"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
+          />
         </li>
         <li>
-          <FaRegFolder className="text-2xl hover:bg-blue-700 hover:text-white cursor-pointer p-2 box-content rounded transition-colors duration-300 ease-in-out" />
+          <FaRegFolder
+            onClick={() => navigate("/folder")}
+            className={`text-4xl cursor-pointer p-2 rounded-md transition-colors duration-300 ease-in-out ${
+              location.pathname === "/folders"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-blue-600 hover:text-white"
+            }`}
+          />
         </li>
       </ul>
     </aside>
