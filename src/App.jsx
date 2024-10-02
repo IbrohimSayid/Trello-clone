@@ -1,70 +1,110 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import Registor from "./pages/Registor";
-import Seting from "./pages/Seting";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
+import Settings from "./pages/Settings";
+import Detailes from "./pages/Deatailes";
+import MainLoyaut from "./layout/MainLayout";
 import Login from "./pages/Login";
-import File from "./pages/File";
-import { useEffect, useState } from "react";
+import Registor from "./pages/Registor";
+import { ThemeProvider } from "./Context/ThemeContext";
+import Folder from "./pages/Foulder";
+import Message from "./pages/Message";
+import Errorpage from "./pages/ErrorPage";
+import Dosc from "./pages/Dosc";
+import Cart from "./pages/Cart";
+import { useAppStore } from "./zustand";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("authToken"));
+  const user = useAppStore((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("authToken"); // Token nomini yangilandi
-    if (storedToken) {
-      setToken(storedToken);
+    const currentPath = window.location.pathname;
+
+    if (!user && currentPath !== "/register") {
+      navigate("/login");
     }
-  }, []);
-
-  function ProtectedRoute({ isAuthenticated, children }) {
-    useEffect(() => {
-      if (!isAuthenticated) {
-        navigate("/login");
-      }
-    }, [isAuthenticated, navigate]);
-
-    return isAuthenticated ? children : null;
-  }
+  }, [user, navigate]);
 
   return (
-    <div className="flex h-screen">
+    <ThemeProvider>
       <Routes>
-        <Route path="/registor" element={<Registor />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/seting"
-          element={
-            <ProtectedRoute isAuthenticated={!!token}>
-              <MainLayout>
-                <Seting />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/file"
-          element={
-            <ProtectedRoute isAuthenticated={!!token}>
-              <MainLayout>
-                <File />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute isAuthenticated={!!token}>
-              <MainLayout>
-                <Home />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+        {user ? (
+          <>
+            <Route
+              path="/"
+              element={
+                <MainLoyaut>
+                  <Home />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <MainLoyaut>
+                  <Settings />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <MainLoyaut>
+                  <Cart />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/deatailes/:id"
+              element={
+                <MainLoyaut>
+                  <Detailes />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/dosc"
+              element={
+                <MainLoyaut>
+                  <Dosc />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/folders"
+              element={
+                <MainLoyaut>
+                  < Folder />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="/message"
+              element={
+                <MainLoyaut>
+                  <Message />
+                </MainLoyaut>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <MainLoyaut>
+                  <Errorpage />
+                </MainLoyaut>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Registor />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        )}
       </Routes>
-    </div>
+    </ThemeProvider>
   );
 }
 

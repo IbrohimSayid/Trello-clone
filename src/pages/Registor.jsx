@@ -1,154 +1,238 @@
-import { useState } from "react";
-import axiosInstance from "../Axios/axiosConfig";
-import { useNavigate } from "react-router-dom";
-import { IoEyeOff, IoEye } from "react-icons/io5";
+import React, { useRef, useState } from "react";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+  const termsAcceptedRef = useRef(null);
+
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (!firstNameRef.current.value) {
+      newErrors.firstName = "Ismingizni kiriting.";
+    }
+
+    if (!lastNameRef.current.value) {
+      newErrors.lastName = "Familiyangizni kiriting.";
+    }
+
+    if (!emailRef.current.value) {
+      newErrors.email = "Email manzilingizni kiriting.";
+    } else if (!/\S+@\S+\.\S+/.test(emailRef.current.value)) {
+      newErrors.email = "Email manzili noto'g'ri.";
+    }
+
+    if (!passwordRef.current.value) {
+      newErrors.password = "Parolni kiriting.";
+    } else if (passwordRef.current.value.length < 8) {
+      newErrors.password = "Parol kamida 8 ta belgidan iborat bo'lishi kerak.";
+    }
+
+    if (passwordRef.current.value !== confirmPasswordRef.current.value) {
+      newErrors.confirmPassword = "Parollar mos kelmaydi.";
+    }
+
+    if (!termsAcceptedRef.current.checked) {
+      newErrors.termsAccepted =
+        "Shartlar va qoidalarni qabul qilishingiz kerak.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
-    try {
-      const response = await axiosInstance.post("/auth/register", {
-        email,
-        firstName,
-        lastName,
-        password,
-        confirmPassword,
-      });
+    const formData = {
+      firstName: firstNameRef.current.value,
+      lastName: lastNameRef.current.value,
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
+    };
 
-      if (response.status === 201) {
-        const token = response.data.token; // Tokenni olish
-        localStorage.setItem("token", token); // Tokenni localStorage ga saqlash
-        localStorage.setItem("tokenExpiry", Date.now() + 60 * 60 * 1000); // 60 daqiqa uchun vaqt belgilash
-        setSuccess("Account created successfully");
-        setError("");
-        navigate("/login");
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
-      setSuccess("");
+    try {
+      await axios.post("https://trello.vimlc.uz/api/auth/register", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      navigate("/login");
+      setErrors({});
+    } catch (error) {
+      setErrors({ api: "Ro'yxatdan o'tishda xato yuz berdi." });
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full">
-      <div className="bg-white p-10 rounded-lg shadow-lg w-96">
-        <h2 className="text-3xl font-bold text-center">Register</h2>
-        <p className="text-gray-600 text-center mb-4">
-          Getting started is easy
-        </p>
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-        {success && (
-          <p className="text-green-600 text-center mb-4">{success}</p>
-        )}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            required
-          />
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            required
-          />
+    <div className="min-h-screen flex bg-gray-200">
+      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-center mb-6">
+          Ro'yxatdan o'tish
+        </h2>
 
-          <div className="relative mb-4">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              ref={emailRef}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="email@example.com"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="firstName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Ism
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              ref={firstNameRef}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ismingiz"
+            />
+            {errors.firstName && (
+              <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="lastName"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Familiya
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              ref={lastNameRef}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Familiyangiz"
+            />
+            {errors.lastName && (
+              <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+            )}
+          </div>
+
+          <div className="mb-4 relative">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Parol
+            </label>
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="border border-gray-400 rounded-lg w-full p-3"
-              required
+              id="password"
+              ref={passwordRef}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="**********"
             />
             <button
               type="button"
-              className="absolute right-3 top-3 text-gray-600"
+              className="absolute right-2 top-11"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <IoEye className="text-2xl" />
+                <FaRegEyeSlash className="text-gray-500" />
               ) : (
-                <IoEyeOff className="text-2xl" />
+                <FaRegEye className="text-gray-500" />
               )}
             </button>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
-          <div className="relative mb-6">
+
+          <div className="mb-4 relative">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Parolni tasdiqlash
+            </label>
             <input
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border border-gray-400 rounded-lg w-full p-3"
-              required
+              id="confirmPassword"
+              ref={confirmPasswordRef}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="**********"
             />
             <button
               type="button"
-              className="absolute right-3 top-3 text-gray-600"
+              className="absolute right-2 top-11"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (
-                <IoEye className="text-2xl" />
+                <FaRegEyeSlash className="text-gray-500" />
               ) : (
-                <IoEyeOff className="text-2xl" />
+                <FaRegEye className="text-gray-500" />
               )}
             </button>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
           </div>
+
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="terms"
+              ref={termsAcceptedRef}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+              Shartlar va qoidalarni qabul qilaman
+            </label>
+            {errors.termsAccepted && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.termsAccepted}
+              </p>
+            )}
+          </div>
+
+          {errors.api && (
+            <p className="text-red-500 text-xs mt-1">{errors.api}</p>
+          )}
+
           <button
             type="submit"
-            className="bg-green-600 text-white rounded-lg w-full p-3 hover:bg-green-700 mb-4"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
           >
-            Create Account
+            Ro'yxatdan o'tish
           </button>
-          <div className="flex justify-between">
-            <button
-              type="button"
-              className="bg-blue-600 text-white rounded-lg w-1/2 p-3 hover:bg-blue-700 mr-2"
-              onClick={() => {
-                alert("Google orqali ro'yxatdan o'tish tugmasi bosildi");
-              }}
-            >
-              Sign Up with Google
-            </button>
-            <button
-              type="button"
-              className="bg-gray-600 text-white rounded-lg w-1/2 p-3 hover:bg-gray-700 ml-2"
-              onClick={() => navigate("/login")}
-            >
-              Log In
-            </button>
-          </div>
+
+          <Link to="/login">
+            <p className="text-center mt-2">
+              Mening hisobim bor / <span className="text-blue-500">Kirish</span>
+            </p>
+          </Link>
         </form>
       </div>
     </div>

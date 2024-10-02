@@ -1,20 +1,24 @@
 import axios from "axios";
+import { useAppStore } from "../zustand";
 
-const axiosInstance = axios.create({
+const instance = axios.create({
     baseURL: "https://trello.vimlc.uz/api",
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
+instance.interceptors.request.use(
+    (config) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user && user.token) {
+            config.headers["Authorization"] = `Bearer ${user.token}`;
+        }
+        return config;
     },
     (error) => {
-        if (error.response) {
-            return Promise.reject(error.response.data);
-        } else {
-            return Promise.reject({ message: "Network Error" });
-        }
+        return Promise.reject(error);
     }
 );
 
-export default axiosInstance;
+export default instance;

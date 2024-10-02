@@ -1,17 +1,24 @@
-import Header from "../components/Header/Header"
-import Sidebar from "../components/Sidebar/Sidebar"
+import React, { createContext, useState, useEffect } from "react";
 
+export const ThemeContext = createContext();
 
-function MainLayout({children}) {
+const MainLayout = ({ children }) => { // MainLayout komponentini aniqlash
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   return (
-    <>
-      <Sidebar></Sidebar>
-      <div className="flex-1 flex flex-col">
-        <Header />
-        {children}
-      </div>
-    </>
-  )
-}
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
-export default MainLayout
+export default MainLayout;

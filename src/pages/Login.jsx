@@ -1,102 +1,160 @@
-import { useState, useEffect } from "react"; // useEffect ni import qilish
-import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "../Axios/axiosConfig";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Ikonkalarni import qilish
+import React, { useRef, useState } from "react";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAppStore } from "../zustand";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Parolni ko'rsatish holatini qo'shish
+const Login = () => {
+  const setUser = useAppStore((state) => state.setUser);
   const navigate = useNavigate();
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
-  useEffect(() => {
-    const tokenExpiry = localStorage.getItem("tokenExpiry");
-    if (tokenExpiry && Date.now() > tokenExpiry) {
-      // Agar token muddati o'tgan bo'lsa, foydalanuvchini logIn sahifasiga yo'naltirish
-      localStorage.removeItem("token");
-      localStorage.removeItem("tokenExpiry");
-      navigate("/login");
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRef.current.value) {
+      newErrors.email = "Iltimos, email manzilingizni kiriting";
+    } else if (!emailRegex.test(emailRef.current.value)) {
+      newErrors.email = "Noto'g'ri email manzili";
     }
-  }, [navigate]);
+
+    if (!passwordRef.current.value) {
+      newErrors.password = "Iltimos, parolingizni kiriting";
+    } else if (passwordRef.current.value.length < 6) {
+      newErrors.password = "Parol kamida 6 ta belgidan iborat bo'lishi kerak";
+    }
+
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    const loginData = {
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
+    };
 
     try {
-      const response = await axiosInstance.post("/auth/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://trello.vimlc.uz/api/auth/login",
+        loginData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      if (response.status === 200) {
-        console.log("Login successful:", response.data);
-        localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("tokenExpiry", Date.now() + 60 * 60 * 1000); // 60 daqiqa uchun vaqt belgilash
-        navigate("/");
-      }
+      setUser(response.data);
+      navigate("/dashboard");
     } catch (error) {
-      setError(error.message || "Login failed");
+      if (error.response && error.response.status === 400) {
+        setErrors({ api: "Email yoki parol noto'g'ri" });
+      } else {
+        setErrors({ api: "Kirishda xato yuz berdi." });
+      }
     }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword); // Parolni ko'rsatish holatini o'zgartirish
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-200 w-full">
-      <div className="bg-white p-10 rounded-lg shadow-lg w-96">
-        <h2 className="text-3xl font-bold text-center mb-2">Login Page</h2>
-        <p className="text-gray-600 text-center mb-4">
-          Login into your account
+    <div className="min-h-screen flex bg-gray-100">
+      <div className="w-1/2 bg-gradient-to-br from-blue-500 to-teal-500 flex flex-col justify-center items-center text-white p-10">
+        <h1 className="text-5xl font-bold mb-4">Xush kelibsiz</h1>
+        <p className="text-lg mb-2">
+          Bizning platformamizga kirish uchun tayyormisiz?
         </p>
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="border border-gray-400 rounded-lg w-full p-3 mb-4"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <div className="relative mb-4">
-            <input
-              type={showPassword ? "text" : "password"} // Parolni ko'rsatish yoki yashirish
-              placeholder="Password"
-              className="border border-gray-400 rounded-lg w-full p-3 pr-10" // Ikonka uchun o'ngda joy qoldirish
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              onClick={togglePasswordVisibility}
-              className="absolute right-3 top-3 cursor-pointer"
+      </div>
+
+      <div className="w-1/2 flex flex-col justify-center items-center p-10">
+        <h2 className="text-3xl font-bold mb-6">Kirish</h2>
+
+        <form className="w-full max-w-md" onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
             >
-              {showPassword ? (
-                <FaEyeSlash className="text-2xl" />
-              ) : (
-                <FaEye className="text-2xl" />
-              )}
-            </span>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              ref={emailRef}
+              className={`mt-1 block w-full px-3 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              placeholder="email@example.com"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Parol
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                ref={passwordRef}
+                className={`mt-1 block w-full px-3 py-2 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="**********"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {errors.api && (
+            <p className="text-red-500 text-xs mt-1">{errors.api}</p>
+          )}
+
           <button
-            className="bg-blue-600 text-white rounded-lg w-full p-3 hover:bg-blue-700"
             type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Log In
+            Kirish
           </button>
         </form>
-        <p className="text-center mt-4">
-          If you don't have an account,{" "}
-          <Link to="/registor" className="text-blue-600 hover:underline">
-            Register here
-          </Link>
+
+        <p className="mt-4 text-sm">
+          Hisobingiz yo'qmi?{" "}
+          <span
+            className="text-blue-600 cursor-pointer"
+            onClick={() => navigate("/register")}
+          >
+            Ro'yxatdan o'ting
+          </span>
         </p>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;

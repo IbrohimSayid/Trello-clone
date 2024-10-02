@@ -51,31 +51,24 @@ function Home() {
 
   const handleCreateBoard = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("authToken"); // Tokenni olish
+    const token = localStorage.getItem("authToken");
     if (!token) {
-      setError("You must be logged in to create a board."); // Agar token bo'lmasa xato xabari
+      setError("Siz avval tizimga kirishingiz kerak.");
       return;
     }
 
     const newBoard = { name: boardName, description, color };
 
     try {
-      const response = await axios.post("/boards", newBoard, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Tokenni so'rovga qo'shish
-        },
-      });
+      const response = await axios.post("/boards", newBoard); // axiosInstance o'rniga axios
       if (response.status === 201) {
-        setSuccess("Board created successfully!");
-        setError("");
-        document.getElementById("my_modal_1").close();
+        setSuccess("Board muvaffaqiyatli yaratildi!");
         setBoardName("");
         setDescription("");
         setColor(colors[0].value);
-        setAddCardVisible(true);
       }
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create the board");
+      setError(error.response?.data?.message || "Board yaratishda xato");
     }
   };
 

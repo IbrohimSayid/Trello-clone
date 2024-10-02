@@ -1,12 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { IoSettingsOutline } from "react-icons/io5";
-import { IoLogOutOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoLogOutOutline } from "react-icons/io5";
 
 const Header = () => {
   const navigate = useNavigate();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isDropdownOpen, setDropdownOpen] = useState(false); // Dropdown holatini boshqarish
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   function handleLogout(event) {
     event.preventDefault();
@@ -30,14 +29,14 @@ const Header = () => {
   }
 
   return (
-    <div className="flex items-center justify-between h-16 bg-gray-800 text-white px-4 shadow-md">
+    <div className="flex items-center justify-between h-16 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 shadow-lg">
       <div className="flex items-center">
         <input
           type="text"
-          className="bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-white text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Search..."
         />
-        <button className="ml-2 p-2 bg-blue-600 rounded-md hover:bg-blue-700 transition duration-200">
+        <button className="ml-2 p-2 bg-white text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -54,7 +53,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="relative p-2 bg-gray-700 rounded-md hover:bg-gray-600 transition duration-200">
+        <button className="relative p-2 bg-white text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition duration-200">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -74,33 +73,29 @@ const Header = () => {
           </span>
         </button>
 
-        <div className="relative dropdown">
+        <div className="relative">
           <button
-            className="flex items-center p-2 bg-gray-700 rounded-full hover:bg-gray-600 transition duration-200"
+            className="flex items-center p-2 bg-white text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition duration-200"
             onClick={() => setDropdownOpen(!isDropdownOpen)}
           >
-            <img
-              alt="Profile"
-              src="./img/ProfileFoto.svg"
-              className="w-10 h-10 rounded-full"
-            />
+            <span className="material-icons">account_circle</span>
           </button>
           {isDropdownOpen && (
-            <ul className="absolute right-0 mt-2 w-48 bg-gray-700 text-white rounded-lg shadow-lg z-10">
+            <ul className="absolute right-0 mt-2 w-48 bg-white text-blue-600 rounded-lg shadow-lg z-10">
               <li
                 onClick={handleSettings}
-                className=" text- cursor-pointer hover:bg-blue-600 rounded-t-lg"
+                className="cursor-pointer hover:bg-blue-100 rounded-t-lg"
               >
-                <a className="block px-4 py-2 flex items-center gap-2 rounded-xl">
+                <a className="block px-4 py-2 flex items-center gap-2">
                   <IoSettingsOutline className="text-lg" /> Settings
                 </a>
               </li>
               <li
                 onClick={handleLogout}
-                className=" text-red-600 cursor-pointer rounded-b-lg hover:bg-blue-600 hover:text-white"
+                className="cursor-pointer text-red-600 hover:bg-blue-100 rounded-b-lg"
               >
                 <a className="block px-4 py-2 flex items-center gap-2">
-                  <IoLogOutOutline className="text-xl" /> Logout
+                  <IoLogOutOutline className="text-lg" /> Logout
                 </a>
               </li>
             </ul>
@@ -110,13 +105,21 @@ const Header = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 p-8 rounded-md flex flex-col gap-4">
-            <p>Do you really want to go out?</p>
+          <div className="bg-white p-8 rounded-md shadow-lg">
+            <p className="text-gray-700 mb-4">Do you really want to logout?</p>
             <div className="flex items-center justify-center gap-4">
-              <button onClick={confirmLogout} className="transition duration-300 ease-in-out text-red-500 border-solid border-2 border-red-500 rounded-xl py-[5px] px-[15px] hover:bg-red-500 hover:text-white">
+              <button
+                onClick={confirmLogout}
+                className="text-white bg-red-500 px-4 py-2 rounded-md hover:bg-red-700 transition"
+              >
                 Yes
               </button>
-              <button onClick={cancelLogout} className="transition duration-300 ease-in-out text-blue-500 border-solid border-2 border-blue-500 rounded-xl py-[5px] px-[15px] hover:bg-blue-500 hover:text-white">Cancel</button>
+              <button
+                onClick={cancelLogout}
+                className="text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-700 transition"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
